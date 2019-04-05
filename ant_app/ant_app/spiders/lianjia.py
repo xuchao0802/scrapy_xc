@@ -64,7 +64,7 @@ class LianjiaSpider(scrapy.Spider):
     def parse(self, response):
         pass
 
-    def get_headers(self,type):
+    def get_headers(self,type):#返回header
         if type == 1:
             headers = {
                 "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
