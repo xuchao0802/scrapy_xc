@@ -11,53 +11,48 @@ class AntAppPipeline(object):
         return item
 
 
-class LoanPipeline(object):#改需求，自动将传入的item插入到数据库中
-    yingyongbao = '''insert into yingyongbao(keyword,apk_md5,apk_publishtime,apk_url,app_downcount,app_id,app_name,author_name,description,pkg_name)
-                        values('{keyword}','{apk_md5}','{apk_public_time}','{apk_url}','{app_downcount}',
-                        '{app_id}','{app_name}','{author_name}','{description}','{pkg_name}')'''
-    template = '''insert into {spider_name}({column})values ({values})'''
+class MysqlPipeline(object):
+    template = '''insert into {spider_name}({column})values ({values});'''
     create = '''create table if not exists {spider_name}({columns}); '''
-    i = 1
+    select = '''select * from {} limit 1; '''
+    alter = '''ALTER TABLE `{spider_name}` ADD COLUMN `{columns}` VARCHAR({num}) null;'''
+
+    first = 1
     def __init__(self, settings):
         self.settings = settings
 
     def process_item(self, item, spider):
 
-        if self.i == 1:
+        if self.first == 1:
             column_list = []
-            for i in item:
-                column_list.append("`" + i + "`varchar(200)")
+
+            for i,y in item.items():
+                len_num = len(y)
+                len_num = max(len_num*2,100)
+                column_list.append("`" + i + "`varchar({})".format(len_num))
             column = ",".join(column_list)
             self.cursor.execute(self.create.format(spider_name=spider.name,columns=column))
-            self.i = 2
+            self.cursor.execute(self.select.format(spider.name))
+            headers = self.cursor.description
+            headers = [i[0] for i in headers]
+            for i,y in item.items():
+                len_num = len(y)
+                len_num = max(len_num*2,100)
+                if i not in headers:
+                    self.cursor.execute(self.alter.format(spider_name=spider.name,columns=i,num=len_num))
+            self.first = 2
 
-        if spider.name == "yingyongbaoapkhh":
-            sqltext = self.yingyongbao.format(
-                keyword=pymysql.escape_string(item['key_world']),
-                apk_md5=pymysql.escape_string(item['apk_md5']),
-                apk_public_time=item['apk_public_time'],
-                apk_url=pymysql.escape_string(item['apk_url']),
-                app_downcount=item['app_down_count'],
-                app_id=pymysql.escape_string(item['app_id']),
-                app_name=pymysql.escape_string(item['app_name']),
-                author_name=pymysql.escape_string(item['author_name']),
-                description=pymysql.escape_string(item['description']),
-                pkg_name=pymysql.escape_string(item['pkg_name']))
-            # spider.log(sqltext)
-            self.cursor.execute(sqltext)
-        else :
-            str_list = []
-            column_list =[]
-            for i in item:
+        str_list = []
+        column_list =[]
+        for i in item:
+            if item[i]:
                 column_list.append("`" + i + "`")
                 str_list.append("'" + item[i] + "'")
-            column = ",".join(column_list)
-            values = ",".join(str_list)
-            sqltext = self.template.format(spider_name=spider.name,column=column,values=values)
-            self.cursor.execute(sqltext)
-        #else:
-            #spider.log('Undefined name: %s' % spider.name)
-            #pymysql.escape_string()mysql的格式
+        column = ",".join(column_list)
+        values = ",".join(str_list)
+        sqltext = self.template.format(spider_name=spider.name,column=column,values=values)
+        self.cursor.execute(sqltext)
+        #pymysql.escape_string()mysql的格式
 
         return item
 

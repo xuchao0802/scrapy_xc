@@ -55,7 +55,6 @@ class SeleniumSpider(scrapy.Spider):
         url = self.start_urls[0]
         if not url.startswith("http://") and not url.startswith("https://"):
             url = "http://"+url
-
         yield scrapy.Request(url=url, meta={'usedSelenium': True, 'dont_redirect': True},
                              callback=self.parse)
 

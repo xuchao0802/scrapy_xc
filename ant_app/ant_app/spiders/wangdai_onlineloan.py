@@ -17,17 +17,6 @@ class OnlineloanSpider(scrapy.Spider):
     start_urls = ['https://www.zhongxinwanka.com/forum-95-1.html']
 
     def start_requests(self):
-        str = '''<html><head></head><body><table>
-                <tbody>
-                    <tr><td>姓名</td><td>年龄</td></tr>
-                    <tr><td>龙泽啦啦</td><td>23</td></tr>
-                    <tr><td>餐巾空</td><td>25</td></tr>
-                </tbody>
-                </table></body></html>
-                '''
-        name = Selector(text=str)
-        name1 = name.xpath("//tr[1]/td[1]/text()").get()
-
         return [scrapy.Request(self.start_urls[0],headers=self.getHeaders(1))]
 
     def parse(self, response):

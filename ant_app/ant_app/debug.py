@@ -1,2 +1,2 @@
 from scrapy.cmdline import execute
-execute("scrapy crawl kouzidashi".split())
+execute("scrapy crawl lianjia".split())

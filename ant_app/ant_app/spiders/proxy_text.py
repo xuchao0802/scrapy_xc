@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from ant_app.items import AntAppItem
+import scrapy_redis
 
 class ProxyTextSpider(scrapy.Spider):
     name = 'proxy_text'
@@ -17,18 +18,18 @@ class ProxyTextSpider(scrapy.Spider):
             ip = i.xpath('./td[2]/text()').get()
             port = i.xpath('./td[3]/text()').get()
             scheme = i.xpath("./td[6]/text()").get()
-            if not self.judge_null(ip) and not self.judge_null(port) and not self.judge_null(scheme):
+            if ip and port and scheme:
                 url = str.lower(scheme)+"://"+ip+":"+port
                 item = AntAppItem()
                 item["ip"] = url
                 meta = {
-                    "url":url,
-                    "proxy":url
+                    "proxy":url,
+                    "dont_retry":True
                 }
-                yield scrapy.Request(url="http://ip.filefab.com/index.php",callback=self.test_pase,meta=meta,dont_filter=True)
+                yield scrapy.Request(url="https://www.baidu.com",callback=self.test_pase,meta=meta,dont_filter=True)
 
     def test_pase(self,response):
-        url = response.meta["url"]
+        url = response.meta["proxy"]
         item = AntAppItem()
         item["ip"] = url
 
@@ -46,9 +47,5 @@ class ProxyTextSpider(scrapy.Spider):
                 "Host": "www.xicidaili.com"
             }
         return headers
-    def judge_null(self,value):
-        if value == None or value == "" or value == False:
-            return True
-        else:
-            return False
+
 

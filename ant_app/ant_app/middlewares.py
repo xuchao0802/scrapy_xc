@@ -115,6 +115,27 @@ class RandomUserAgentMiddleware (object):
     def process_request(self,request, spider):
         request.headers["user-agent"] = random.choice(self.user_agent)
 
+import pymysql
+class ProxyDownloaderMiddleware():
+    def __init__(self):
+        host = "localhost"
+        port = 3306
+        db = "crawl_schema"
+        user = "root"
+        password = "imiss968"
+        sql = '''SELECT ip FROM crawl_schema.proxy_text
+where update_time >20190413 and ip is not null;'''
+        connet = pymysql.connect(host=host,port=port,user=user,password=password,db=db, charset="utf8")
+        cursor = connet.cursor()
+        cursor.execute(sql)
+        self.ip_set = cursor.fetchall()#如果ip为空
+        cursor.close()
+        connet.close()
+
+    def process_request(self,request,spider):
+        request.meta["proxy"] = random.choice(self.ip_set[0])#如果ip没有用去除
+
+
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -122,7 +143,7 @@ from selenium.webdriver.common.keys import Keys
 from scrapy.http import HtmlResponse
 import time
 
-class SeleniumMiddleware():
+class SeleniumMiddleware():#只是使用selenium得到一个url的页面，适用页面找不到真实数据，在spider中需要定义driver和wait
     # Middleware中会传递进来一个spider，这就是我们的spider对象，从中可以获取__init__时的chrome相关元素
     def process_request(self, request, spider):
         print(f"chrome is getting page")

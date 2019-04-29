@@ -9,19 +9,21 @@ import pymysql
 class YingyongbaoapkSpider(scrapy.Spider):
     name = 'yingyongbao'
     allowed_domains = ['sj.qq.com']
+    custom_settings = {"CONCURRENT_REQUESTS":16,
+                       "DOWNLOAD_DELAY":0,
+                       }
     start_urls = ['http://sj.qq.com/']
+
 
     def start_requests(self):
         host = "localhost"
         user = "root"
         password = "imiss968"
         database = "crawl_schema"
-        sql = "select distinct platform from aikaiwan limit 500 "  # 插入sql语句
-        count = "select count()"
+        sql = "select distinct platform from aikaiwan limit 50 "  # 插入sql语句
         db = pymysql.connect(host=host, user=user, password=password, db=database, port=3306, charset="utf8")
         cursor = db.cursor()
-        cursor.execute(sql)
-        i = cursor.rowcount#cursor得到的个数
+        num = cursor.execute(sql)
         t = True
         while t:
             i = cursor.fetchone()
@@ -42,7 +44,7 @@ class YingyongbaoapkSpider(scrapy.Spider):
         #page_number_stack = response.meta["pageNumberStack"]
         json_data = json.loads(response.body)
         obj = json_data["obj"]
-        page_number_stack_netx = obj["pageNumberStack"]
+        #page_number_stack_netx = obj["pageNumberStack"]
         #next_url = "https://sj.qq.com/myapp/searchAjax.htm?kw=" + parse.quote(keyword) + "&pns="+parse.quote(page_number_stack_netx)+"&sid=0"
 
         #has_nest = obj["hasNext"]
