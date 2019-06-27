@@ -18,8 +18,10 @@ class MysqlPipeline(object):
     alter = '''ALTER TABLE `{spider_name}` ADD COLUMN `{columns}` VARCHAR({num}) null;'''
 
     first = 1
+
     def __init__(self, settings):
         self.settings = settings
+
 
     def process_item(self, item, spider):
 
@@ -64,7 +66,7 @@ class MysqlPipeline(object):
         # 连接数据库
         self.connect = pymysql.connect(
             host=self.settings.get('MYSQL_HOST'),
-            port=3306,
+            port=self.settings.get('MYSQL_PORT'),
             db=self.settings.get('MYSQL_DBNAME'),
             user=self.settings.get('MYSQL_USER'),
             passwd=self.settings.get('MYSQL_PASSWD'),
@@ -79,3 +81,9 @@ class MysqlPipeline(object):
     def close_spider(self, spider):
         self.cursor.close()
         self.connect.close()
+
+    def howMany():
+        print('We have {0:d} robots.'.format(1))
+
+
+    howMany = staticmethod(howMany)

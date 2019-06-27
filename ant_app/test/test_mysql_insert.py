@@ -1,3 +1,4 @@
+#测试commit的提交速度
 import pymysql
 create = '''create table if not exists {spider_name}({columns}); '''
 column_list = ["`name1`","`name2`","`name3`","`name4`","`name5`","`name6`","`name7`","`name8`"]
@@ -22,6 +23,7 @@ for i in range(10000):
     sql1 = template.format(spider_name="test", columns=column,values=values)
     cursor.execute(sql1)
     db.commit()
+    db.ba
 
 cursor.close()
 db.close()

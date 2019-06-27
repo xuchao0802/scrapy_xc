@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>标准事件流(捕获事件和冒泡事件)</title>
+        <!--IE不支持-->
+        <script type="text/javascript">
+            function show(sText){
+                var oDiv=document.getElementById("display");
+                oDiv.innerHTML+=sText;
+            }
+
+            window.onload=function(){//捕获事件，即由外到内
+                var myBody=document.getElementById("myBody");
+                var myDiv=document.getElementById("myDiv");
+                var myP=document.getElementById("myP");
+                myBody.addEventListener("click", function(){show('body<br>');}, true);//若为false则是冒泡事件
+                myDiv.addEventListener("click", function(){show('div<br>');}, true);
+                myP.addEventListener("click", function(){show('p<br>');}, true);
+            }
+        </script>
+    </head>
+    <body id="myBody">
+        <div id="myDiv">
+            <p id="myP">click me</p>
+        </div>
+        <div id="display"></div>
+    </body>
+</html>

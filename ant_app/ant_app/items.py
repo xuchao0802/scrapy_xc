@@ -138,6 +138,17 @@ class boss(scrapy.Item):
     hangye = scrapy.Field()
     zhucezijin = scrapy.Field()
 
+class yamaxun(scrapy.Item):
+    name = scrapy.Field()
+    information = scrapy.Field()
+    phonenum = scrapy.Field()
+    fenlei_url = scrapy.Field()
+    fenlei_name = scrapy.Field()
+    more_url = scrapy.Field()
+    shanghu_url = scrapy.Field()
+    shanghu_name = scrapy.Field()
+    detailurl = scrapy.Field()
+
 
 
 

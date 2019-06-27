@@ -17,14 +17,12 @@ class BankcunguangSpider(scrapy.Spider):
 
     def page_parse(self, response):
         select_list = response.css("#jigou").xpath("./li")
-
         for i in select_list:
-
             url = i.xpath("./div[3]/a/@href").get()
             url = "https://dp.nifa.org.cn"+url
             yield scrapy.Request(url,callback=self.detail_parse,method="get")
-    def detail_parse(self,response):
 
+    def detail_parse(self,response):
         yinhang = response.css(".intro-txt").xpath("./span[1]/text()").get()
         bumeng = response.css(".intro-txt").xpath("./span[2]/text()").get()
         other = response.css(".intro-txt").xpath("./span[3]").xpath("string(.)").get()
@@ -44,8 +42,6 @@ class BankcunguangSpider(scrapy.Spider):
             credit_code = i.xpath("./td[6]/text()").get()
             system_name = i.xpath("./td[7]/text()").get()
             system_version = i.xpath("./td[8]/text()").get()
-
-
 
             if company_name != None:
                 company_name = re.sub("\s", "", company_name)

@@ -68,10 +68,11 @@ MEDIA_ALLOW_REDIRECTS = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'img_project.pipelines.ImgProjectPipeline': 300,
-    'img_project.pipelines.ImgPipeline': 301
+    'img_project.pipelines.ImgProjectPipeline': 1,
+    'img_project.pipelines.ImgPipeline': 400,
 }
 today = time.localtime()
+
 IMAGES_STORE = "/img_files"
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

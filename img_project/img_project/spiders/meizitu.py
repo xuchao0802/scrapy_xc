@@ -8,28 +8,28 @@ from img_project.items import ImgProjectItem
 class MeizituSpider(scrapy.Spider):
     name = 'meizitu'
     allowed_domains = ['meizitu.com']
-    start_urls = ['https://www.mzitu.com/']
+    start_urls = ['https://www.7160.com/qingchunmeinv/']
 
     def start_requests(self):
         url = self.start_urls[0]
         yield scrapy.Request(url,headers=self.get_headers(1))
 
     def parse(self, response):
-        url_list = response.css(".postlist").xpath("./ul/li")
+        url_list = response.css(".news_bom-left").xpath(".//img")
         for i in url_list:
             item = ImgProjectItem()
-            url = i.xpath("./a/@href").get()
-            img_url = i.xpath("./a/img/@data-original").get()
-            item["url"] = url
+            title = i.xpath("./@alt").get()
+            img_url = i.xpath("./@src").get()
+            item["title"] = title
             item["image_urls"] = img_url
             yield item
 
 
 
 
-    def get_headers(self,type=1):
+    def get_headers(self,type = 1):
         headers = {
-                "Host": "www.mzitu.com",
+                "Host": "www.7160.com",
                 "Connection": "keep-alive",
                 "Upgrade-Insecure-Requests": "1",
                 "User-Agent": "Mozilla/5.0ct (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",

@@ -14,9 +14,6 @@ from collections import namedtuple
 class LianjiaSpider(RedisSpider):
     name = 'lianjia'
     redis_key = "lianjia:start_urls"#redis
-    start_urls = ['https://hz.lianjia.com/chengjiao/']
-    allowed_domains = ['lianjia.com']
-
     to_day = time.localtime()
     log_file_path = 'log/scrapy—{}_{}_{}_{}.log'.format(name,to_day.tm_year, to_day.tm_mon, to_day.tm_mday)
     custom_settings = {
@@ -24,18 +21,20 @@ class LianjiaSpider(RedisSpider):
         #"LOG_LEVEL": 'WARNING',
         #"LOG_FILE": log_file_path
     }
-    def start_requests(self):
-        url = "https://hz.lianjia.com/chengjiao/"
-        yield scrapy.Request(url=url,callback=self.home_page, method="GET", headers=self.get_headers(1))
 
-    def start_requests1(self):
+    # def __init__(self,*args,**kwargs):
+    #     self.allowed_domains = 'lijiaddd.com'
+    #     # 修改这里的类名为当前类名
+    #     super(LianjiaSpider, self).__init__(*args, **kwargs)
+
+    def start_requests(self):
 
         host = '127.0.0.1'
         user = "root"
         password = "imiss968"
         database = "crawl_schema"
         sql = '''SELECT distinct second_name,second_url FROM crawl_schema.lianjia
-where second_num < 3000 and second_url is not null and second_url like "%chengjiao%"
+where second_num < 3000 and second_url is not null and second_url like "%chengjiao%" limit 2
 '''
         connet = pymysql.connect(host=host,user=user,port=3306,db=database,password=password,charset="utf8")
         cur = connet.cursor()
@@ -123,9 +122,9 @@ where second_num < 3000 and second_url is not null and second_url like "%chengji
             "ziquyu":ziquyu
 
         }
-        #a = self.detailurl_parse(response,meta)
-        #for i in a:
-            #yield i
+        a = self.detailurl_parse(response,meta)
+        for i in a:
+            yield i
         try:
             dict_num = eval(str)
             num = dict_num["totalPage"]

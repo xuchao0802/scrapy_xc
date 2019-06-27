@@ -11,6 +11,7 @@
 import time
 
 BOT_NAME = 'ant_app'
+
 SPIDER_MODULES = ['ant_app.spiders']
 NEWSPIDER_MODULE = 'ant_app.spiders'
 
@@ -22,19 +23,19 @@ NEWSPIDER_MODULE = 'ant_app.spiders'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 30#并发
+CONCURRENT_REQUESTS = 32#并发
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0#下载延迟三秒
+DOWNLOAD_DELAY = 3#下载延迟三秒
 RANDOMIZE_DOWNLOAD_DELAY = True
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -74,9 +75,10 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+EXTENSIONS = {
+   # 'scrapy.extensions.telnet.TelnetConsole': None,
+    'ant_app.extension.redisSpiderSmartIdleCloseExensions': 500,
+}
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
@@ -84,7 +86,7 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {#从低到高
 #    'ant_app.pipelines.AntAppPipeline': 300,
      'ant_app.pipelines.MysqlPipeline': 300,
-    #'scrapy_redis.pipelines.RedisPipeline': 300
+    #'scrapy_redis.pipelines.RedisPipeline': 290
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -92,10 +94,7 @@ ITEM_PIPELINES = {#从低到高
 #AUTOTHROTTLE_ENABLED = True
 # The initial download delay
 #AUTOTHROTTLE_START_DELAY = 5
-# The maximum download delay to be set in case of high latenciesRETRY_TIMES
-RETRY_ENABLED = True#重试
-RETRY_TIMES = 3
-#RETRY_HTTP_CODECS=#遇到什么网络状态码进行重试默认[500, 502, 503, 504, 522, 524, 408]
+# The maximum download delay to be set in case of high latencies
 #AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
@@ -111,6 +110,9 @@ RETRY_TIMES = 3
 #HTTPCACHE_IGNORE_HTTP_CODES = []#这么http状态码不响应
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+RETRY_ENABLED = True#重试
+RETRY_TIMES = 3
+#RETRY_HTTP_CODES=#遇到什么网络状态码进行重试默认[500, 502, 503, 504, 522, 524, 408]
 #HTTPERROR_ALLOWED_CODES=[] #允许在此列表中的非200状态代码响应
 
 #DOWNLOAD_TIMEOUT超时等待时间
@@ -120,17 +122,17 @@ RETRY_TIMES = 3
 #log日志记录
 LOG_LEVEL = 'DEBUG'
 to_day = time.localtime()
-log_file_path = 'log/scrapy_{}_{}_{}.log'.format(to_day.tm_year, to_day.tm_mon, to_day.tm_mday)
+log_file_path = 'log/scrapy_{}_{}_{}.log'.format(to_day.tm_year, to_day.tm_mon, to_day.tm_mday)#在spider添加spidername
 #LOG_FILE = log_file_path
 
 
 COMMANDS_MODULE = "ant_app.commands"#将自定义命令加入到scrapy中
-#SPIDER_LOADER_CLASS = ""
+#SPIDER_LOADER_CLASS = ""#这个？
 
 
 #reids
-SCHEDULER = "scrapy_redis.scheduler.Scheduler"
-DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"#用于检测过滤重复的类
+# SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+# DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"#用于检测过滤重复的类
 # 指定排序爬取地址时使用的队列，
 # 默认的 按优先级排序(Scrapy默认)，由sorted set实现的一种非FIFO、LIFO方式。
 #SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.SpiderPriorityQueue'
@@ -143,11 +145,17 @@ REDIS_PARAMS = {'password': 'imiss968',}
 
 #连接MYSQL数据库
 MYSQL_HOST = 'localhost'
+MYSQL_PORT = 3306
 MYSQL_DBNAME = 'crawl_schema'
 MYSQL_USER = 'root'
 MYSQL_PASSWD = 'imiss968'
 
 #爬行顺序
-DEPTH_PRIORITY = 1#正数以广度优先，加后面两个设置彻底以广度优先
-SCHEDULER_DISK_QUEUE  =  'scrapy.squeues.PickleFifoDiskQueue'
-SCHEDULER_MEMORY_QUEUE  =  'scrapy.squeues.FifoMemoryQueue'
+# DEPTH_PRIORITY = 1#正数以广度优先，加后面两个设置彻底以广度优先
+# SCHEDULER_DISK_QUEUE  =  'scrapy.squeues.PickleFifoDiskQueue'
+# SCHEDULER_MEMORY_QUEUE  =  'scrapy.squeues.FifoMemoryQueue'
+
+
+#extend相关的东西
+MYEXT_ENABLED=True      # 开启redis结束的扩展
+IDLE_NUMBER=60           # 配置空闲持续时间单位为 360个 ，一个时间单位为5s

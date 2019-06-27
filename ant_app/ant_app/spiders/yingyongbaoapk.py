@@ -14,30 +14,14 @@ class YingyongbaoapkSpider(scrapy.Spider):
                        }
     start_urls = ['http://sj.qq.com/']
 
-
     def start_requests(self):
-        host = "localhost"
-        user = "root"
-        password = "imiss968"
-        database = "crawl_schema"
-        sql = "select distinct platform from aikaiwan limit 50 "  # 插入sql语句
-        db = pymysql.connect(host=host, user=user, password=password, db=database, port=3306, charset="utf8")
-        cursor = db.cursor()
-        num = cursor.execute(sql)
-        t = True
-        while t:
-            i = cursor.fetchone()
-            if i is None:
-                t = False
-            else:
-                keyword = i[0]
-                keyword = re.search("\S+", keyword).group()
-                url = "https://sj.qq.com/myapp/searchAjax.htm?kw=" + parse.quote(keyword) + "&pns=&sid="
-                meta = {"keyword": keyword, "pageNumberStack": "null"}
-                yield scrapy.Request(url=url, callback=self.parse, method="GET", meta=meta)  # self.方法名字
-        cursor.close()
-        db.close()
-
+        sql = "select distinct platform from aikaiwan limit 50"  #插入sql语句
+        a = self.seeds_frommysql(sql)
+        for keyword in a:
+            keyword = re.search("\S+", keyword).group()
+            url = "https://sj.qq.com/myapp/searchAjax.htm?kw=" + parse.quote(keyword) + "&pns=&sid="
+            meta = {"keyword": keyword, "pageNumberStack": "null"}
+            yield scrapy.Request(url=url, callback=self.parse, method="GET", meta=meta)
 
     def parse(self, response):
         keyword = response.meta["keyword"]
@@ -79,22 +63,33 @@ class YingyongbaoapkSpider(scrapy.Spider):
         meta = {"keyword": keyword, "pageNumberStack":page_number_stack_netx }
         headers = self.getHeaders(1)
         if(has_nest==1 and page_number_stack != page_number_stack_netx):
-            scrapy.FormRequest(url=next_url, callback=self.getapk, method="POST", meta=meta, formdata=data,\
-                               headers=headers)'''
+            yield scrapy.FormRequest(url=next_url, callback=self.getapk, method="POST", meta=meta, formdata=data,headers=headers)'''
         return items
 
-    def get_headers(self, type):
-        if (type == 1):
-            headers = {
-                "": ""
-            }
-            return headers
+    def seeds_frommysql(self,sql):
+        host = self.settings.get("MYSQL_HOST")
+        user = self.settings.get("MYSQL_USER")
+        password = self.settings.get("MYSQL_PASSWD")
+        database = self.settings.get("MYSQL_DBNAME")
+        port = self.settings.get("MYSQL_PORT")
+        db = pymysql.connect(host=host, user=user, password=password, db=database, port=port, charset="utf8")
+        cursor = db.cursor()
+        cursor.execute(sql)
+        for i in cursor.fetchall():
+            keyword = i[0]
+            yield keyword  # self.方法名字
+        cursor.close()
+        db.close()
 
-'''
-with open("d:/data/seeds/data_zhongxinwanka.txt", "r", encoding="utf-8") as f:
-    for i in f:
-        keyword = re.search("\S+",i).group()
-        url = "https://sj.qq.com/myapp/searchAjax.htm?kw="+parse.quote(keyword)+"&pns=&sid="
-        meta = {"keyword": keyword, "pageNumberStack": "null"}
-        yield scrapy.Request(url=url, callback=self.parse, method="GET", meta=meta)  # self.方法名字
-f.close()'''
+    def get_headers(self,num):
+        if num == 1:
+            headers = {
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Language": "zh-CN,zh;q=0.9",
+                "Connection":"keep-alive",
+                "Host": "hz.lianjia.com",
+                "Upgrade-Insecure-Requests":"1",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
+            }
+        return headers

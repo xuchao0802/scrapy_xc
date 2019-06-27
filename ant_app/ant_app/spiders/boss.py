@@ -7,7 +7,6 @@ import time
 import re
 
 
-
 class BossSpider(RedisSpider):
     name = 'boss'
     allowed_domains = ['www.zhipin.com']
@@ -18,17 +17,18 @@ class BossSpider(RedisSpider):
     log_file_path = 'log/scrapy—{}_{}_{}_{}.log'.format(name,to_day.tm_year, to_day.tm_mon, to_day.tm_mday)
     custom_settings = {
         "LOG_LEVEL":'DEBUG',
-        "LOG_FILE":log_file_path
+        #"LOG_FILE":log_file_path
     }
-
+    def make_requests_from_url(self, url):
+        return scrapy.Request(url,meta={"name":"world"},callback=self.get_detail)
+    '''
     def start_requests(self):#只能return一个request
         keywords = ["爬虫","python"]
         for keyword in keywords:
             a = quote(keyword)
             for num in range(1,11):
                 url = "https://www.zhipin.com/c101210100/?query="+a+"&page={}&ka=page-{}".format(num,num)
-                yield scrapy.Request(url=url,callback=self.parse,method="GET",dont_filter=True,)
-
+                yield scrapy.Request(url=url,callback=self.parse,method="GET",dont_filter=True,)'''
 
     def parse(self, response):
         url_list = response.css(".job-list").xpath("./ul/li")

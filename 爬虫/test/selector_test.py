@@ -5,6 +5,7 @@ html_str = '''<table>
     <td>餐巾空</td><td>25</td></tr>
 </table>'''
 html = selector.Selector(text=html_str)
+html.css("").xpath()
 name = html.xpath("/html/body/table/td[2]/text()").get()
 
 from bs4 import BeautifulSoup

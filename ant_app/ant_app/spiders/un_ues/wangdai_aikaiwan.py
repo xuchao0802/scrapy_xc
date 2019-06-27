@@ -8,8 +8,6 @@ class AikaiwanSpider(scrapy.Spider):
     allowed_domains = ['www.7177.cn']
     start_urls = ['https://www.7177.cn/daikuanchaoshi']
 
-
-
     def parse(self, response):
         if response.status == 404:
             return None
@@ -40,9 +38,8 @@ class AikaiwanSpider(scrapy.Spider):
         review = container.xpath("./div[1]/div[2]/div[2]/table/tbody/tr[2]/td[3]/i/text()").extract()[0]
         arrival = container.xpath("./div[1]/div[2]/div[2]/table/tbody/tr[3]/td[1]/i/text()").extract()[0]
         credit = container.xpath("./div[1]/div[2]/div[2]/table/tbody/tr[3]/td[2]/i/text()").extract()[0]
-
-
         other = response.xpath('//*[@id="main-container"]/div[2]/div[2]/div/div[2]/div[1]').xpath("string(.)").extract()[0]
+
         item = onlineloanItem()
         item["platform"] = platform
         item["amount"] = amount

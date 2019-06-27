@@ -8,14 +8,12 @@ from ant_app.items import AntAppItem
 from urllib import parse
 
 
-
-
-class SeleniumSpider(scrapy.Spider):
+class SeleniumSpider(scrapy.Spider):#这个可以好好改
     name = 'selenium'
-    allowed_domains = ['v-investment.com']
-    start_urls = ['https://www.tianyancha.com/company/288315480']
+    allowed_domains = []
+    start_urls = ['https://www.zhihu.com/explore']
     custom_settings = {
-        'LOG_LEVEL': 'INFO',
+        'LOG_LEVEL': 'DEBUG',
         'DOWNLOAD_DELAY': 0,
         'COOKIES_ENABLED': False,  # enabled by default
         'DOWNLOADER_MIDDLEWARES': {

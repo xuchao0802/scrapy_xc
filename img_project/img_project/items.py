@@ -13,4 +13,4 @@ class ImgProjectItem(scrapy.Item):
     # name = scrapy.Field()
     image_urls = scrapy.Field()
     image = scrapy.Field()
-    url = scrapy.Field()
+    title = scrapy.Field()

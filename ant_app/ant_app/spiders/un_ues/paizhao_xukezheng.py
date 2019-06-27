@@ -23,7 +23,7 @@ class XukezhengSpider(scrapy.Spider):
         data = json.loads(json_str)
         root = data["root"]
         for i in root:
-            orgTypeCode =  i["orgTypeCode"]
+            orgTypeCode = i["orgTypeCode"]
             orgTypeName = i["orgTypeName"]
             url = "http://xukezheng.cbrc.gov.cn/ilicence/getLicence.do?useState=3&organNo=&fatherOrganNo=&province=&orgAddress=&organType="+orgTypeCode+"&branchType=&fullName=&address=&flowNo="
             if (orgTypeCode != "-1"):

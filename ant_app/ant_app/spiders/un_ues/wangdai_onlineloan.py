@@ -38,7 +38,6 @@ class OnlineloanSpider(scrapy.Spider):
         li_list = response.css("#moderate").xpath("./li")
         for i in li_list:
             url = "https://www.zhongxinwanka.com/"+i.xpath("./div[2]/h5/a/@href").extract()[0]
-
             yield scrapy.Request( url=url, method="GET", callback=self.detail_parse,headers=self.getHeaders(1))
 
     def detail_parse(self,response):
